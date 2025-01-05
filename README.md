@@ -1,6 +1,6 @@
 # Voice Remover
 
-![Description de l'image](file-PK3rACYNXgvnsjowge7yym.png)
+![Description de l'image](file-PK3rACYNXgvnsjowge7yym.png?width=300)
  <!-- Remplacez par l'URL de votre logo -->
 
 ## Description
