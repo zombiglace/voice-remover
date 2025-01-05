@@ -1,5 +1,8 @@
 # Voice Remover
-<img src="file-PK3rACYNXgvnsjowge7yym.png" alt="Description de l'image" width="200" height="200" align="center">
+<div align="center">
+  <img src="file-PK3rACYNXgvnsjowge7yym.png" alt="Description de l'image" width="150" height="150">
+</div>
+
 
  <!-- Remplacez par l'URL de votre logo -->
 
