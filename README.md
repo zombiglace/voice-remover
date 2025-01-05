@@ -1,6 +1,6 @@
 # Voice Remover
 
-![Voice Remover Logo](https://example.com/logo.png) <!-- Remplacez par l'URL de votre logo -->
+![Voice Remover Logo]([https://example.com/logo.png](https://www.dropbox.com/scl/fi/w0edxt39oiygmv3fbpae1/file-PK3rACYNXgvnsjowge7yym.png?rlkey=ssvg7j1c2rxsw0wkud2mutxa2&st=c72wfspo&dl=0)) <!-- Remplacez par l'URL de votre logo -->
 
 ## Description
 
