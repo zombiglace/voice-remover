@@ -4,7 +4,7 @@
 
 ## Description
 
-Voice Remover est un outil JavaScript qui permet de supprimer la voix d'une piste audio, laissant uniquement la musique. Ce projet est idéal pour les musiciens, les DJ et les amateurs de karaoké qui souhaitent créer des versions instrumentales de leurs chansons préférées.
+Voice Remover est un outil JavaScript qui permet de supprimer la voix d'une piste audio, laissant uniquement la musique. Ce projet est idéal pour les musiciens, les DJ et les amateurs de karaoké qui souhaitent créer des versions instrumentales de leurs chansons préférées mais aussi pour les youtubeurs qui ne veulent pas de voix dans leurs clip vidéo.
 
 ## Fonctionnalités
 
