@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retirer la voix d'une vidéo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #444;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      #videoInput {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      #videoInput:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+
+      video {
+        width: 100%;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      #removeVoiceBtn {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #removeVoiceBtn:hover {
+        background-color: #218838;
+      }
+
+      .file-info {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Retirer la voix d'une vidéo</h1>
+      <input type="file" id="videoInput" accept="video/*" />
+      <div class="file-info" id="fileInfo"></div>
+      <video id="videoPlayer" controls></video>
+      <button id="removeVoiceBtn">Retirer la voix</button>
+    </div>
+
+    <script>
+      // script.js
+
+      let audioContext = null; // Variable pour stocker le contexte audio
+      let audioSource = null; // Variable pour stocker la source audio
+
+      document
+        .getElementById("videoInput")
+        .addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          const videoPlayer = document.getElementById("videoPlayer");
+          const fileInfo = document.getElementById("fileInfo");
+
+          if (file) {
+            videoPlayer.src = URL.createObjectURL(file);
+            fileInfo.textContent = `Fichier sélectionné : ${file.name}`;
+          } else {
+            fileInfo.textContent = "";
+          }
+        });
+
+      document
+        .getElementById("removeVoiceBtn")
+        .addEventListener("click", function () {
+          const videoPlayer = document.getElementById("videoPlayer");
+
+          // Créer un seul AudioContext s'il n'existe pas déjà
+          if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          }
+
+          // Vérifier si une source audio existe déjà
+          if (!audioSource) {
+            // Créer une source audio à partir de la vidéo
+            audioSource = audioContext.createMediaElementSource(videoPlayer);
+          }
+
+          // Créer un splitter pour séparer les canaux stéréo
+          const splitter = audioContext.createChannelSplitter(2);
+
+          // Créer un merger pour recombiner les canaux
+          const merger = audioContext.createChannelMerger(2);
+
+          // Créer un gain pour inverser la phase d'un canal
+          const invertGain = audioContext.createGain();
+          invertGain.gain.value = -1;
+
+          // Connecter la source au splitter
+          audioSource.connect(splitter);
+
+          // Connecter un canal au gain inversé
+          splitter.connect(invertGain, 0);
+          splitter.connect(merger, 1); // Connecter l'autre canal directement au merger
+
+          // Recombiner les canaux
+          invertGain.connect(merger, 0, 0); // Connecter le canal inversé au merger
+
+          // Connecter le merger à la destination (haut-parleurs)
+          merger.connect(audioContext.destination);
+
+          // Démarrer la lecture
+          videoPlayer.play();
+        });
+    </script>
+  </body>
+</html>
