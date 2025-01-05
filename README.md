@@ -1,6 +1,7 @@
 # Voice Remover
 
-![Description de l'image](file-PK3rACYNXgvnsjowge7yym.png?heigt=300)
+<img src="file-PK3rACYNXgvnsjowge7yym.png" alt="Description de l'image" width="150" height="150">
+
  <!-- Remplacez par l'URL de votre logo -->
 
 ## Description
