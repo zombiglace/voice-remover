@@ -1,6 +1,6 @@
 # Voice Remover
 <div align="center">
-  <img src="file-PK3rACYNXgvnsjowge7yym.png" alt="Description de l'image" width="150" height="150">
+  <img src="file-PK3rACYNXgvnsjowge7yym.png" alt="Description de l'image" width="300" height="300">
 </div>
 
 
