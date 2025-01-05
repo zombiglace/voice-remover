@@ -28,4 +28,4 @@ Pour utiliser Voice Remover, suivez ces étapes :
 1. Clonez le dépôt :
 
    ```bash
-   git clone https://github.com/votre-utilisateur/voice-remover.git
+   git clone https://github.com/zombiglace/voice-remover.git
