@@ -78,6 +78,34 @@
         font-size: 0.9rem;
         color: #666;
       }
+
+      #downloadLink {
+        display: none;
+        margin-top: 20px;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      #downloadLink:hover {
+        text-decoration: underline;
+      }
+
+      #downloadBtn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 20px;
+        display: none; /* Initialement caché */
+      }
+
+      #downloadBtn:hover {
+        background-color: #0056b3;
+      }
     </style>
   </head>
   <body>
@@ -87,14 +115,17 @@
       <div class="file-info" id="fileInfo"></div>
       <video id="videoPlayer" controls></video>
       <button id="removeVoiceBtn">Retirer la voix</button>
+      <button id="downloadBtn">Télécharger la vidéo modifiée</button>
+      <a id="downloadLink" style="display: none"></a>
     </div>
 
     <script>
-      // script.js
+      let audioContext = null;
+      let audioSource = null;
+      let mediaRecorder = null;
+      let recordedChunks = [];
 
-      let audioContext = null; // Variable pour stocker le contexte audio
-      let audioSource = null; // Variable pour stocker la source audio
-
+      // Gérer la sélection de fichier
       document
         .getElementById("videoInput")
         .addEventListener("change", function (event) {
@@ -110,47 +141,91 @@
           }
         });
 
+      // Gérer le retrait de la voix
       document
         .getElementById("removeVoiceBtn")
-        .addEventListener("click", function () {
+        .addEventListener("click", async function () {
           const videoPlayer = document.getElementById("videoPlayer");
 
-          // Créer un seul AudioContext s'il n'existe pas déjà
           if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
           }
 
-          // Vérifier si une source audio existe déjà
           if (!audioSource) {
-            // Créer une source audio à partir de la vidéo
             audioSource = audioContext.createMediaElementSource(videoPlayer);
           }
 
-          // Créer un splitter pour séparer les canaux stéréo
+          // Créer un splitter pour séparer les canaux audio
           const splitter = audioContext.createChannelSplitter(2);
-
-          // Créer un merger pour recombiner les canaux
           const merger = audioContext.createChannelMerger(2);
-
-          // Créer un gain pour inverser la phase d'un canal
           const invertGain = audioContext.createGain();
           invertGain.gain.value = -1;
 
-          // Connecter la source au splitter
+          // Connecter les nœuds audio
           audioSource.connect(splitter);
-
-          // Connecter un canal au gain inversé
-          splitter.connect(invertGain, 0);
-          splitter.connect(merger, 1); // Connecter l'autre canal directement au merger
-
-          // Recombiner les canaux
-          invertGain.connect(merger, 0, 0); // Connecter le canal inversé au merger
-
-          // Connecter le merger à la destination (haut-parleurs)
+          splitter.connect(invertGain, 0); // Inverser le canal gauche
+          splitter.connect(merger, 1); // Conserver le canal droit
+          invertGain.connect(merger, 0, 0); // Combiner les canaux
           merger.connect(audioContext.destination);
 
-          // Démarrer la lecture
+          // Créer un MediaStream pour enregistrer la vidéo et l'audio
+          const mediaStream = videoPlayer.captureStream();
+          const audioDestination = audioContext.createMediaStreamDestination();
+          merger.connect(audioDestination);
+
+          // Combiner les flux vidéo et audio
+          const combinedStream = new MediaStream([
+            ...mediaStream.getVideoTracks(),
+            ...audioDestination.stream.getAudioTracks(),
+          ]);
+
+          // Configurer le MediaRecorder
+          recordedChunks = [];
+          mediaRecorder = new MediaRecorder(combinedStream, {
+            mimeType: "video/mp4; codecs=vp9,opus", // Format compatible
+          });
+
+          mediaRecorder.ondataavailable = function (event) {
+            if (event.data.size > 0) {
+              recordedChunks.push(event.data);
+            }
+          };
+
+          mediaRecorder.onstop = function () {
+            const blob = new Blob(recordedChunks, { type: "video/mp4" });
+            const downloadLink = document.getElementById("downloadLink");
+            const downloadBtn = document.getElementById("downloadBtn");
+
+            // Mettre à jour le lien de téléchargement
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = "video_sans_voix.mp4"; // Changer l'extension en .webm
+            downloadLink.style.display = "block";
+
+            // Afficher le bouton de téléchargement
+            downloadBtn.style.display = "block";
+          };
+
+          // Démarrer l'enregistrement
+          mediaRecorder.start();
           videoPlayer.play();
+
+          // Arrêter l'enregistrement après la lecture de la vidéo
+          videoPlayer.onended = function () {
+            mediaRecorder.stop();
+          };
+        });
+
+      // Gérer le téléchargement de la vidéo modifiée
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", function () {
+          const a = document.createElement("a");
+          a.href = document.getElementById("downloadLink").href;
+          a.download = "video_sans_voix.mp4"; // Changer l'extension en .webm
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
         });
     </script>
   </body>
